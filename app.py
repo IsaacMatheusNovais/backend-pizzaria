@@ -1,5 +1,6 @@
 from flask import Flask, request
 from cliente import criar_cliente, obter_cliente, listar_clientes, atualizar_cliente, excluir_cliente
+from produto import criar_produto, listar_produto, editar_produto, deletar_produto, obter_produto
 
 #cria aplicação Flask
 app = Flask(__name__)
@@ -107,6 +108,92 @@ def excluir_cliente_route(id_cliente):
         return resultado, 404
     return resultado, 200
 
+#Rota para criar produto
+@app.route('/produtos', methods=['POST'])
+def criar_produto_route():
+
+    dados = request.get_json()
+    if not dados:
+        return {
+            "success": False,
+            "message": "JSON inválido ou ausente"
+        }, 400
+
+    campos_obrigatorios = [
+        "nome",
+        "preco"
+    ]
+
+    for campo in campos_obrigatorios:
+        if campo not in dados:
+            return {
+                "success": False,
+                "message": f"Campo obrigatório ausente: {campo}"
+            }, 400
+
+    resultado = criar_produto(
+        nome=dados["nome"],
+        preco=dados["preco"]
+    )
+
+    if not resultado["success"]:
+        return resultado, 400
+
+    return resultado, 201
+
+#rota para listar produtos
+@app.route('/produtos')
+def listar_produtos_route():
+    return listar_produto(), 200
+
+#rota para obter um produto por ID
+@app.route('/produtos/<int:id_produto>', methods=['GET'])
+def produto_por_id_route(id_produto):
+    resultado = obter_produto(id_produto)
+
+    if not resultado["success"]:
+        return resultado, 404
+    return resultado, 200
+
+#Rota para editar produto
+@app.route('/produtos/<int:id_produto>', methods=['PUT'])
+def editar_produto_route(id_produto):
+    dados = request.get_json()
+
+    if not dados:
+        return {
+            "sucess": False,
+            "message": "JSON inválido ou ausente"
+        }, 400
+    
+    campos_obrigatorios = [
+        "novo_nome",
+        "novo_preco"
+    ]
+    for campo in campos_obrigatorios:
+        if campo not in dados:
+            return {
+                "success": False,
+                "message": f"Campo obrigatório ausente: {campo}"
+            }, 400
+        
+    resultado = editar_produto(
+        id_produto=id_produto,
+        novo_nome=dados["novo_nome"],
+        novo_preco=dados["novo_preco"]
+    )
+    if not resultado["success"]:
+        return resultado, 404
+    return resultado, 200
+
+#Rota para deletar produto
+@app.route('/produtos/<int:id_produto>', methods=['DELETE'])
+def deletar_produto_route(id_produto):
+    resultado = deletar_produto(id_produto)
+
+    if not resultado["success"]:
+        return resultado, 404
+    return resultado, 200
 
 #verifica se o script está sendo executado diretamente
 if __name__ == '__main__':
