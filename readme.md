@@ -1,39 +1,50 @@
-# Sistema de Pedidos de Pizzaria
+# Sistema de Pedidos para Pizzaria
 
-Este projeto é um backend desenvolvido em Python para gerenciar pedidos de uma pizzaria, com PostgreSQL como banco de dados.
+Projeto desenvolvido em Python com PostgreSQL para gerenciamento de clientes, produtos e pedidos de uma pizzaria.
+
+O sistema permite o cadastro de clientes e produtos, criação de pedidos e associação de múltiplos produtos a cada pedido, simulando operações comuns de um ambiente comercial.
 
 ## Tecnologias Utilizadas
-- Python 3.x
-- psycopg2 (para conexão com PostgreSQL)
-- PostgreSQL (banco de dados relacional)
+
+* Python
+* PostgreSQL
+* SQL
+* Psycopg2
 
 ## Funcionalidades
-- Cadastro de clientes
-- Cadastro de produtos
-- Criação de pedidos
-- Associação de produtos a pedidos
-- Consulta detalhada de pedidos
+
+* Cadastro de clientes
+* Cadastro de produtos
+* Criação de pedidos
+* Associação de produtos aos pedidos
+* Consulta detalhada de pedidos
+* Operações de CRUD em banco de dados relacional
 
 ## Estrutura do Projeto
-- `database.py`: Função de conexão com o banco de dados.
-- `cliente.py`: Funções para criar, editar e deletar clientes.
-- `produto.py`: Funções para gerenciar produtos.
-- `pedido.py`: Funções para criar pedidos e associar produtos.
-- `main.py`: Integração e execução das operações.
 
-## Como Executar
-1. Crie um ambiente virtual (opcional, mas recomendado): python -m venv venv
+* `database.py` — conexão com o banco de dados
+* `cliente.py` — gerenciamento de clientes
+* `produto.py` — gerenciamento de produtos
+* `pedido.py` — criação e gerenciamento de pedidos
+* `main.py` — integração e execução do sistema
 
-2. Ative o ambiente virtual:
-- No Windows: `venv\Scripts\activate`
-- No macOS/Linux: `source venv/bin/activate`
+## Conceitos Aplicados
 
-3. Instale as dependências: pip install -r requirements.txt
+* Modelagem de banco de dados relacional
+* Relacionamento entre entidades
+* Modularização de código
+* Manipulação de dados com SQL
+* Integração Python + PostgreSQL
+* Separação de responsabilidades
 
-4. Configure o banco de dados no PostgreSQL (crie o banco e as tabelas se ainda não estiverem criadas).
+## Objetivo
 
-5. Execute o script principal: python main.py
+Este projeto foi desenvolvido com o objetivo de praticar desenvolvimento backend utilizando Python e PostgreSQL, aplicando conceitos de persistência de dados, organização de código e implementação de regras de negócio.
 
-## Notas
-- Certifique-se de que o PostgreSQL está rodando localmente na porta padrão (5432) ou ajuste a configuração no arquivo `database.py`.
-- Caso precise de mais funcionalidades, basta adicionar novas funções e integrá-las no `main.py`.
+## Autor
+
+Isaac Matheus dos Santos Novais
+
+LinkedIn: linkedin.com/in/isaac-matheus-novais
+
+GitHub: github.com/IsaacMatheusNovais
