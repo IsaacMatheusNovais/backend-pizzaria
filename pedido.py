@@ -1,19 +1,29 @@
 from database import conectar
 import psycopg2.extras
+from psycopg2.errors import ForeignKeyViolation
 
+#criar pedido
 def criar_pedido(id_cliente):
-    with conectar() as conexao:
-        with conexao.cursor() as cursor:
-            cursor.execute(
-                "INSERT INTO pedido (id_cliente) VALUES (%s) RETURNING id_pedido",(id_cliente,)
-            )
-            id_pedido = cursor.fetchone()[0]
-            return {
-                "success": True,
-                "data":{
-                    "id_pedido":id_pedido
+    try:
+        with conectar() as conexao:
+            with conexao.cursor() as cursor:
+                cursor.execute(
+                    "INSERT INTO pedido (id_cliente) VALUES (%s) RETURNING id_pedido",(id_cliente,)
+                )
+                id_pedido = cursor.fetchone()[0]
+
+                return {
+                    "success": True,
+                    "data":{
+                        "id_pedido":id_pedido,
+                        "id_cliente": id_cliente
+                    }
                 }
-            }
+    except ForeignKeyViolation:
+        return {
+            "success": False,
+            "message": "cliente não encontrado"
+        }
         
 def adicionar_produto_ao_pedido(id_pedido, id_produto, quantidade):
     with conectar() as conexao:

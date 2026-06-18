@@ -1,6 +1,7 @@
 from flask import Flask, request
 from cliente import criar_cliente, obter_cliente, listar_clientes, atualizar_cliente, excluir_cliente
 from produto import criar_produto, listar_produto, editar_produto, deletar_produto, obter_produto
+from pedido import criar_pedido
 
 #cria aplicação Flask
 app = Flask(__name__)
@@ -194,6 +195,29 @@ def deletar_produto_route(id_produto):
     if not resultado["success"]:
         return resultado, 404
     return resultado, 200
+
+#Rota para criar pedido
+@app.route('/pedidos', methods=['POST'])
+def criar_pedido_route():
+    dados = request.get_json()
+
+    if not dados:
+        return {
+            "success": False,
+            "message": "JSON inválido ou ausente"
+        }, 400
+
+    if "id_cliente" not in dados:
+        return {
+            "success": False,
+            "message": "Campo obrigatório ausente: id_cliente"
+        }, 400
+    
+    resultado = criar_pedido(id_cliente=dados["id_cliente"])
+    if not resultado["success"]:
+        return resultado, 404
+    return resultado, 201
+
 
 #verifica se o script está sendo executado diretamente
 if __name__ == '__main__':
