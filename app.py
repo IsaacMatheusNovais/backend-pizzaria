@@ -1,7 +1,7 @@
 from flask import Flask, request
 from cliente import criar_cliente, obter_cliente, listar_clientes, atualizar_cliente, excluir_cliente
 from produto import criar_produto, listar_produto, editar_produto, deletar_produto, obter_produto
-from pedido import criar_pedido
+from pedido import criar_pedido,adicionar_produto_ao_pedido, busca_pedido
 
 #cria aplicação Flask
 app = Flask(__name__)
@@ -218,6 +218,47 @@ def criar_pedido_route():
         return resultado, 404
     return resultado, 201
 
+
+#rota para adicionar produto ao pedido
+@app.route('/pedidos/<int:id_pedido>/produtos/<int:id_produto>', methods=['POST'])
+def adicionar_produto_ao_pedido_route(id_pedido, id_produto):
+    dados = request.get_json()
+
+    if not dados:
+        return {
+            "success": False,
+            "message": "JSON inválido ou ausente"
+        }, 400
+
+    if "quantidade" not in dados:
+        return {
+            "success": False,
+            "message": "Campo obrigatório ausente: quantidade"
+        }, 400
+    
+    if dados["quantidade"]<= 0:
+        return {
+            "success": False,
+            "message": "A quantidade deve ser maior que zero"
+        }, 400
+    
+    resultado = adicionar_produto_ao_pedido(
+        id_pedido=id_pedido, 
+        id_produto=id_produto, 
+        quantidade=dados["quantidade"])
+    
+    if not resultado["success"]:
+        return resultado, 404
+    return resultado, 201
+
+#rota para buscar pedido por id do pedido
+@app.route('/pedidos/<int:id_pedido>', methods=['GET'])
+def busca_pedidos_route(id_pedido):   
+
+    resultado = busca_pedido(id_pedido)
+    if not resultado["success"]:
+        return resultado, 404
+    return resultado, 200
 
 #verifica se o script está sendo executado diretamente
 if __name__ == '__main__':
