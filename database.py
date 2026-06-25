@@ -4,8 +4,6 @@ import psycopg2
 
 load_dotenv()
 
-print(os.getenv("DB_PASSWORD"))
-
 def conectar():
     return psycopg2.connect(
         host="localhost",

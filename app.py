@@ -1,7 +1,7 @@
 from flask import Flask, request
 from cliente import criar_cliente, obter_cliente, listar_clientes, atualizar_cliente, excluir_cliente
 from produto import criar_produto, listar_produto, editar_produto, deletar_produto, obter_produto
-from pedido import criar_pedido,adicionar_produto_ao_pedido, busca_pedido
+from pedido import criar_pedido,adicionar_produto_ao_pedido, busca_pedido, remover_produto_do_pedido, editar_quantidade_produto_pedido
 
 #cria aplicação Flask
 app = Flask(__name__)
@@ -214,8 +214,10 @@ def criar_pedido_route():
         }, 400
     
     resultado = criar_pedido(id_cliente=dados["id_cliente"])
+    
     if not resultado["success"]:
         return resultado, 404
+    
     return resultado, 201
 
 
@@ -256,6 +258,46 @@ def adicionar_produto_ao_pedido_route(id_pedido, id_produto):
 def busca_pedidos_route(id_pedido):   
 
     resultado = busca_pedido(id_pedido)
+    if not resultado["success"]:
+        return resultado, 404
+    return resultado, 200
+
+#Editar quantidade de produto no pedido
+@app.route('/pedidos/<int:id_pedido>/produtos/<int:id_produto>', methods=['PUT'])
+def editar_quantidade_produto_route(id_pedido, id_produto):
+    dados = request.get_json()
+
+    if not dados:
+        return {
+            "success": False,
+            "message": "JSON inválido ou ausente"
+        }, 400
+    
+    if "nova_quantidade" not in dados:
+        return {
+            "success": False,
+            "message": "Campo obrigatório ausente: nova_quantidade"
+        }, 400
+
+    if dados["nova_quantidade"] <= 0:
+        return {
+            "success": False,
+            "message": "A quantidade deve ser maior que zero"
+        }, 400
+    
+    resultado = editar_quantidade_produto_pedido(
+        id_pedido=id_pedido,
+        id_produto=id_produto,
+        nova_quantidade=dados["nova_quantidade"]
+    )
+    if not resultado["success"]:
+        return resultado, 400
+    return resultado, 200
+
+#rota para remover produto do pedido
+@app.route('/pedidos/<int:id_pedido>/produtos/<int:id_produto>', methods=['DELETE'])
+def remover_produto_do_pedido_route(id_pedido, id_produto):
+    resultado = remover_produto_do_pedido(id_pedido, id_produto)
     if not resultado["success"]:
         return resultado, 404
     return resultado, 200

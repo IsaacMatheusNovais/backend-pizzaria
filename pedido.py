@@ -30,6 +30,13 @@ def adicionar_produto_ao_pedido(id_pedido, id_produto, quantidade):
     try:
         with conectar() as conexao:
             with conexao.cursor() as cursor:
+                
+                #busca e armazena nome do produto
+                cursor.execute("""
+                               SELECT nome FROM produto
+                               WHERE id_produto = %s""", (id_produto,))
+                
+                produto = cursor.fetchone()
 
                 # Verifica se o produto já existe no pedido
                 cursor.execute(
@@ -53,17 +60,20 @@ def adicionar_produto_ao_pedido(id_pedido, id_produto, quantidade):
                         SET quantidade = quantidade + %s
                         WHERE id_pedido = %s
                         AND id_produto = %s
+                        RETURNING quantidade
                         """,
                         (quantidade, id_pedido, id_produto)
                     )
+
+                    quantidade_total = cursor.fetchone()[0]
 
                     return {
                         "success": True,
                         "message": "Quantidade atualizada com sucesso",
                         "data": {
                             "id_pedido": id_pedido,
-                            "id_produto": id_produto,
-                            "quantidade_adicionada": quantidade
+                            "produto": produto[0],
+                            "quantidade_total": quantidade_total
                         }
                     }
 
@@ -93,7 +103,7 @@ def adicionar_produto_ao_pedido(id_pedido, id_produto, quantidade):
                         "message": "Produto adicionado ao pedido",
                         "data": {
                             "id_pedido": id_pedido,
-                            "id_produto": id_produto,
+                            "produto": produto[0],
                             "quantidade": quantidade
                         }
                     }
@@ -159,7 +169,7 @@ def busca_pedido(id_pedido):
 # ainda sejam retornados pela consulta. Nesses casos os campos
 # de produto virão como None.
 
-
+# Função para calcular o total do pedido usada na função busca_pedido
 def total_pedido(id_pedido):
     with conectar() as conexao:
         with conexao.cursor() as cursor:
@@ -177,5 +187,75 @@ def total_pedido(id_pedido):
                 "data":{    
                     "id_pedido": id_pedido,
                     "total": total
+                }
+            }
+
+#Função para editar a quantidade de um produto em um pedido
+def editar_quantidade_produto_pedido(id_pedido, id_produto, nova_quantidade):
+    with conectar() as conexao:
+        with conexao.cursor() as cursor:
+            cursor.execute("""
+                           UPDATE pedido_produto
+                           SET quantidade = %s
+                           WHERE id_pedido = %s AND id_produto = %s
+                           """, (nova_quantidade, id_pedido, id_produto))
+            if nova_quantidade <= 0:
+                return {
+                    "success": False,
+                    "message": "A quantidade deve ser maior que zero"
+            }
+    
+            if cursor.rowcount == 0:
+                return {
+                    "success": False,
+                    "message": "Produto não encontrado no pedido"
+                }
+            
+            cursor.execute("""
+                           SELECT nome FROM produto
+                           WHERE id_produto = %s
+                           """, (id_produto,))
+            
+            nome_produto = cursor.fetchone()
+
+            return {
+                "success": True,
+                "message": "Quantidade atualizada com sucesso",
+                "data": {
+                    "id_pedido": id_pedido,
+                    "nome_produto": nome_produto[0],
+                    "nova_quantidade": nova_quantidade
+                }
+            }
+
+# Função para remover produto do pedido
+def remover_produto_do_pedido(id_pedido, id_produto):
+    with conectar() as conexao:
+        with conexao.cursor() as cursor:
+
+            cursor.execute("""
+                SELECT nome
+                FROM produto
+                WHERE id_produto = %s
+            """, (id_produto,))#SELECT para pegar o nome do produto antes de deletar.
+
+            produto = cursor.fetchone()#Armazena o nome.
+
+            cursor.execute("""
+                           DELETE FROM pedido_produto
+                           WHERE id_pedido = %s AND id_produto = %s
+                           """, (id_pedido, id_produto))
+            linhas_afetadas = cursor.rowcount
+            if linhas_afetadas == 0:
+                return {
+                    "success": False,
+                    "message": "Produto não encontrado no pedido"
+                }
+            return {
+                "success": True,
+                "message": "Produto removido do pedido",
+                "data": {
+                    "id_pedido": id_pedido,
+                    "nome_produto": produto[0]
                 }
             }
