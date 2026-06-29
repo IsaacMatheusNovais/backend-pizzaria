@@ -3,3 +3,4 @@ venv/
 .env
 *.pyc
 *der_pizzaria.pgerd
+main.py
