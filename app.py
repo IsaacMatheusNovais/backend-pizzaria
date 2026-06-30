@@ -20,7 +20,7 @@ def listar_clientes_route():
     return listar_clientes(), 200
 
 #rota para obter um cliente por ID
-@app.route('/clientes/<int:id_cliente>')
+@app.route('/clientes/<int:id_cliente>', methods=['GET'])
 def cliente_por_id_route(id_cliente):
 
     resultado = obter_cliente(id_cliente)
@@ -304,6 +304,10 @@ def remover_produto_do_pedido_route(id_pedido, id_produto):
 
 #verifica se o script está sendo executado diretamente
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=False
+    )
 #"Sobre o app.run" Inicia o servidor Flask em modo de depuração, permitindo que o aplicativo seja
 #acessado localmente e fornecendo mensagens de erro detalhadas durante o desenvolvimento.
