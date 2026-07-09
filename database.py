@@ -6,8 +6,8 @@ load_dotenv()
 
 def conectar():
     return psycopg2.connect(
-        host="localhost",
-        database="pizzaria",
-        user="postgres",
-        password=os.getenv("DB_PASSWORD")
+        database=os.getenv("POSTGRES_DB"),
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD"),
+        host=os.getenv("DB_HOST")
     )

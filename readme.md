@@ -134,6 +134,22 @@ POST /pedidos/1/produtos/2
 pip install -r requirements.txt
 python app.py
 ```
+## Executando com Docker
+
+1. Clone o repositório
+
+git clone ...
+
+2. Configure o arquivo .env
+
+3. Execute
+
+docker compose up --build
+
+4. A API estará disponível em
+
+http://localhost:5000
+
 
 ## Autor
 
